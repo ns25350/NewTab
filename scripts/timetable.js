@@ -30,11 +30,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // 💡 現在選択されているテーマカラー（blue, red, green等）を自動で判別する関数
+    // 現在選択されているテーマカラー（blue, red, green等）を自動で判別する関数
     function getThemeSuffix() {
         const colors = ["blue", "red", "yellow", "green", "cyan", "pink", "orange", "purple", "silver", "brown", "peach", "dark"];
         
-        // 1. 画面（bodyやhtml）のクラス名や属性から現在の色を探す
         const activeClasses = [...document.body.classList, ...document.documentElement.classList];
         for (const color of colors) {
             if (activeClasses.includes(color) || 
@@ -44,27 +43,24 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
         
-        // 2. 保存されている設定（localStorage）から探す
         const saved = localStorage.getItem("theme") || localStorage.getItem("color") || localStorage.getItem("theme-color");
         if (saved && colors.includes(saved.toLowerCase())) {
             return `-${saved.toLowerCase()}`;
         }
         
-        // 3. 見つからない場合はデフォルトの青にする
         return "-blue";
     }
 
     // 表を作成して表示する関数
     function renderTimetable(data) {
-        // 現在のテーマの接尾辞（例: "-blue", "-red"）を取得
         const suffix = getThemeSuffix();
         
-        // 💡 1. 表の外枠（コンテナ）の背景を指定通り「accentLightTint」に、文字色を「textColorDark」に設定
+        // 💡 外枠（コンテナ）を取得してスタイルを適用
         const container = document.getElementById("timetableCenterContainer");
         if (container) {
             container.style.background = `var(--accentLightTint${suffix})`;
             container.style.color = `var(--textColorDark${suffix})`;
-            container.style.boxShadow = "0 4px 14px rgba(0,0,0,0.1)";
+            container.style.boxShadow = "none"; // 💡 影を完全に無くします
         }
 
         // 今日の日付の計算
@@ -81,14 +77,14 @@ document.addEventListener("DOMContentLoaded", () => {
         html += "<div style='overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch;'>";
         html += `<table style='display: table !important; width: 100% !important; border-collapse: collapse !important; font-size: 13px !important; text-align: center !important; table-layout: fixed !important;'>`;
         
-        // 💡 2. 1行目（1限〜7限のラベル）：背景は「darkColor」、文字は「whitishColor」
+        // 1行目（1限〜7限のラベル）：背景は「darkColor」、文字は「whitishColor」
         html += `<tr style='display: table-row !important; background: var(--darkColor${suffix}) !important; color: var(--whitishColor${suffix}) !important;'>`;
         data.schedule.forEach((_, index) => {
             html += `<th style='display: table-cell !important; border: 1px solid var(--accentLightTint${suffix}) !important; padding: 8px !important; font-weight: bold !important; min-width: 45px !important;'>${index + 1}限</th>`;
         });
         html += "</tr>";
 
-        // 💡 3. 2行目（教科名）：背景は「whitishColor」、文字は「textColorDark」
+        // 2行目（教科名）：背景は「whitishColor」、文字は「textColorDark」
         html += `<tr style='display: table-row !important; background: var(--whitishColor${suffix}) !important; color: var(--textColorDark${suffix}) !important;'>`;
         data.schedule.forEach((subject) => {
             html += `<td style='display: table-cell !important; border: 1px solid var(--accentLightTint${suffix}) !important; padding: 8px !important; word-break: break-all !important; white-space: normal !important; vertical-align: middle !important; font-weight: 500 !important;'>${subject || "―"}</td>`;
