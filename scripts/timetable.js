@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const contentArea = document.getElementById("timetableContent");
 
     // 1. GAS（Google Apps Script）で「ウェブアプリとしてデプロイ」したURLに差し替えてください
-    const GAS_API_URL = "https://script.google.com/macros/s/XXXXX/exec";
+    const GAS_API_URL = "https://script.google.com/a/macros/isk.ed.jp/s/AKfycbyCnh63cv6b-BGXrCdHufYbXO5ALM99clAzxMkoUOWnSuc5GxneXd9NU2iWy3v45cPi/exec";
 
     // 2. ボタンをクリックしたら時間割の表示/非表示を切り替える
     toggleButton.addEventListener("click", () => {
