@@ -34,21 +34,27 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // 5. HTMLを生成して画面に映す関数
+    // 5. HTMLを生成して画面に映す関数（1限〜7限の縦並び表示）
     function renderTimetable(data) {
-        // 例: GASから { "Monday": ["国語", "数学", ...], "Tuesday": [...] } のような形式で来ると仮定
-        let html = "<table style='width:100%; border-collapse: collapse; margin-top:10px;'>";
-        
-        // 曜日のヘッダー
-        html += "<tr><th style='border:1px solid #ccc; padding:8px;'>曜日</th><th style='border:1px solid #ccc; padding:8px;'>授業内容</th></tr>";
-
-        for (const day in data) {
-            const subjects = data[day].join(", "); // 配列をカンマ区切りの文字列にする
-            html += `<tr>
-                <td style='border:1px solid #ccc; padding:8px; font-weight:bold;'>${day}</td>
-                <td style='border:1px solid #ccc; padding:8px;'>${subjects}</td>
-            </tr>`;
+        if (data.error) {
+            contentArea.innerHTML = `<p style='color:orange;'>${data.error}</p>`;
+            return;
         }
+
+        let html = `<p style="font-weight: bold; margin-bottom: 8px;">本日（${data.day}）の時間割</p>`;
+        html += "<table style='width:100%; border-collapse: collapse; margin-top:5px;'>";
+        
+        // ヘッダー
+        html += "<tr><th style='border:1px solid #ccc; padding:6px; width:25%;'>時限</th><th style='border:1px solid #ccc; padding:6px;'>授業内容</th></tr>";
+
+        // 1時間目〜7時間目のデータをループで回す
+        data.schedule.forEach((subject, index) => {
+            html += `<tr>
+                <td style='border:1px solid #ccc; padding:6px; text-align:center; font-weight:bold;'>${index + 1}限</td>
+                <td style='border:1px solid #ccc; padding:6px;'>${subject}</td>
+            </tr>`;
+        });
+        
         html += "</table>";
         
         contentArea.innerHTML = html;
