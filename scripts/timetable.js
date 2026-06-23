@@ -5,7 +5,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const ttCheckbox = document.getElementById("timetableCheckbox");
     const ttClassField = document.getElementById("timetableClassField");
     
-    // 💡 カスタムプルダウンの要素を取得
     const customSelectButton = document.getElementById("customSelectButton");
     const customSelectValue = document.getElementById("customSelectValue");
     const customSelectDropdown = document.getElementById("customSelectDropdown");
@@ -18,56 +17,99 @@ document.addEventListener("DOMContentLoaded", () => {
     const savedClass = localStorage.getItem("timetableClass") || "101";     
 
     if(ttCheckbox) ttCheckbox.checked = isEnabled;
-    if(customSelectValue) customSelectValue.innerText = savedClass; // 選択中のクラスを表示
+    if(customSelectValue) customSelectValue.innerText = savedClass;
     if(ttClassField) ttClassField.style.display = isEnabled ? "flex" : "none";
     if(container) container.style.display = isEnabled ? "block" : "none";
 
-    // 💡 クラス一覧をJSで作ってドロップダウンに入れる
     const classList = [
         "101","102","103","104","105","106","107","108","109","110",
         "201","202","203","204","205/6文","205理","206理","207","208","209","210",
         "301","302","303","304","305","306","307","308","309","310"
     ];
 
+    function getThemeSuffix() {
+        const colors = ["blue", "red", "yellow", "green", "cyan", "pink", "orange", "purple", "silver", "brown", "peach", "dark"];
+        const activeClasses = [...document.body.classList, ...document.documentElement.classList];
+        for (const color of colors) {
+            if (activeClasses.includes(color) || document.documentElement.getAttribute("data-theme") === color || document.body.getAttribute("data-theme") === color) {
+                return `-${color}`;
+            }
+        }
+        const saved = localStorage.getItem("theme") || localStorage.getItem("color") || localStorage.getItem("theme-color");
+        if (saved && colors.includes(saved.toLowerCase())) return `-${saved.toLowerCase()}`;
+        return "-blue";
+    }
+
+    // 💡 ドロップダウンリストのテーマカラーを更新する関数
+    function updateDropdownTheme() {
+        if (!customSelectDropdown) return;
+        const suffix = getThemeSuffix();
+        
+        // 背景色をテーマの明るい色、文字色を濃い色に動的設定
+        customSelectDropdown.style.background = `var(--accentLightTint${suffix})`;
+        customSelectDropdown.style.color = `var(--textColorDark${suffix})`;
+        
+        // ダークテーマのみ見えにくくなるのを防ぐため影や枠を微調整
+        if (suffix === "-dark") {
+            customSelectDropdown.style.border = "1px solid rgba(255, 255, 255, 0.15)";
+            customSelectDropdown.style.boxShadow = "0 -4px 25px rgba(0,0,0,0.5)";
+        } else {
+            customSelectDropdown.style.border = "1px solid rgba(0, 0, 0, 0.1)";
+            customSelectDropdown.style.boxShadow = "0 -4px 20px rgba(0,0,0,0.15)";
+        }
+
+        // 子要素（各クラスのアイテム）の文字色も統一
+        const items = customSelectDropdown.querySelectorAll(".dropdown-item");
+        items.forEach(item => {
+            item.style.color = `var(--textColorDark${suffix})`;
+        });
+    }
+
     if (customSelectDropdown) {
         classList.forEach(cls => {
             const item = document.createElement("div");
             item.innerText = cls;
-            item.style.cssText = "padding: 10px 16px; cursor: pointer; font-size: 14px; transition: background 0.2s;";
+            item.className = "dropdown-item"; // テーマ適用のためのクラス
+            item.style.cssText = "padding: 10px 16px; cursor: pointer; font-size: 14px; transition: background 0.2s, color 0.2s;";
             
-            // ホバーで色を変える
-            item.onmouseover = () => item.style.background = "rgba(128, 128, 128, 0.2)";
+            // ホバー時の背景（少し半透明のグレー等でブレンド）
+            item.onmouseover = () => item.style.background = "rgba(128, 128, 128, 0.15)";
             item.onmouseout = () => item.style.background = "transparent";
             
-            // クラスを選んだ時の処理
             item.addEventListener("click", () => {
                 customSelectValue.innerText = cls;
                 localStorage.setItem("timetableClass", cls);
                 
-                // メニューを閉じる
                 customSelectDropdown.style.display = "none";
                 customSelectArrow.style.transform = "rotate(0deg)";
                 
-                // 表を更新
                 if (globalTimetableData) {
                     renderTimetable(globalTimetableData, cls);
                 }
             });
             customSelectDropdown.appendChild(item);
         });
+        // 最初期化時の色合わせ
+        updateDropdownTheme();
     }
 
-    // 💡 ボタンを押したらドロップダウンを開閉する
     if (customSelectButton) {
         customSelectButton.addEventListener("click", (e) => {
-            e.stopPropagation(); // 他のクリックイベントと衝突させない
+            e.stopPropagation();
             const isOpen = customSelectDropdown.style.display === "block";
-            customSelectDropdown.style.display = isOpen ? "none" : "block";
-            customSelectArrow.style.transform = isOpen ? "rotate(0deg)" : "rotate(180deg)"; // 矢印をクルッと回す
+            
+            if (!isOpen) {
+                // 💡 開く直前に最新のテーマカラーを読み込んで適用する
+                updateDropdownTheme();
+                customSelectDropdown.style.display = "block";
+                customSelectArrow.style.transform = "rotate(180deg)";
+            } else {
+                customSelectDropdown.style.display = "none";
+                customSelectArrow.style.transform = "rotate(0deg)";
+            }
         });
     }
 
-    // 💡 画面の別の場所を押したらドロップダウンを閉じる
     document.addEventListener("click", () => {
         if (customSelectDropdown && customSelectDropdown.style.display === "block") {
             customSelectDropdown.style.display = "none";
@@ -75,7 +117,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // オンオフスイッチの処理
     if(ttCheckbox) {
         ttCheckbox.addEventListener("change", (e) => {
             const checked = e.target.checked;
@@ -111,19 +152,6 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("時間割取得エラー:", error);
             if(contentArea) contentArea.innerHTML = `<p style='color:red; font-size:13px; margin:0; text-align:center;'>時間割の取得に失敗しました。<br><small>${error.message}</small></p>`;
         }
-    }
-
-    function getThemeSuffix() {
-        const colors = ["blue", "red", "yellow", "green", "cyan", "pink", "orange", "purple", "silver", "brown", "peach", "dark"];
-        const activeClasses = [...document.body.classList, ...document.documentElement.classList];
-        for (const color of colors) {
-            if (activeClasses.includes(color) || document.documentElement.getAttribute("data-theme") === color || document.body.getAttribute("data-theme") === color) {
-                return `-${color}`;
-            }
-        }
-        const saved = localStorage.getItem("theme") || localStorage.getItem("color") || localStorage.getItem("theme-color");
-        if (saved && colors.includes(saved.toLowerCase())) return `-${saved.toLowerCase()}`;
-        return "-blue";
     }
 
     function renderTimetable(data, targetClass) {
