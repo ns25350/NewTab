@@ -1492,14 +1492,32 @@
                                             </div>
                                         </div>
                                         <div class="ttcont" id="timetableTimeField" style="display: none; flex-direction: column; align-items: flex-start; padding-top: 5px; padding-bottom: 15px;">
-                                             <div class="bigText" style="margin-bottom: 10px; opacity: 1.0;">Switch to Next Day At</div>
-                                             <input type="time" id="timetableSwitchTime" style="
-                                                  width: 100%; padding: 12px 16px; border-radius: 12px;
-                                                  background: rgba(128, 128, 128, 0.1); color: inherit;
-                                                  border: 1px solid rgba(128, 128, 128, 0.2);
-                                                  font-size: 15px; font-weight: 500; cursor: pointer;
-                                                  box-sizing: border-box; outline: none; font-family: inherit;
-                                             ">
+                                            <div class="infoText" style="margin-bottom: 10px; font-weight: bold; opacity: 0.8;">Switch to Next Day At</div>
+    
+                                            <div id="timeSelectContainer" style="position: relative; width: 100%;">
+                                                <div id="timeSelectButton" style="
+                                                    width: 100%; padding: 12px 16px; border-radius: 12px;
+                                                    background: rgba(128, 128, 128, 0.1); color: inherit;
+                                                    border: 1px solid rgba(128, 128, 128, 0.2);
+                                                    font-size: 15px; font-weight: 500; cursor: pointer;
+                                                    display: flex; justify-content: space-between; align-items: center;
+                                                    box-sizing: border-box; transition: background 0.2s;
+                                                " onmouseover="this.style.background='rgba(128, 128, 128, 0.2)'" onmouseout="this.style.background='rgba(128, 128, 128, 0.1)'">
+                                                    <span id="timeSelectValue">16:00</span>
+                                                    <svg id="timeSelectArrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s;">
+                                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                                    </svg>
+                                                </div>
+        
+                                                <div id="timeSelectDropdown" style="
+                                                    display: none; position: absolute; bottom: 100%; left: 0; right: 0;
+                                                    margin-bottom: 6px; max-height: 200px; overflow-y: auto;
+                                                    border-radius: 12px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+                                                    z-index: 100; border: 1px solid rgba(128,128,128,0.2);
+                                                    padding: 8px 0;
+                                                ">
+                                                    </div>
+                                            </div>
                                         </div>
                                          
                                         <div class="ttcont">
